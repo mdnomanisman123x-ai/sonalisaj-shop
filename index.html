@@ -157,7 +157,7 @@ textarea { resize: vertical; min-height: 64px; }
   var WA = '8801906374498';   // হোয়াটসঅ্যাপ নম্বর (দেশের কোডসহ, + ছাড়া)
   var SHOP = 'সোনালী সাজ';     // শপের নাম
   var SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsuwMym2bfzz0f_L8VnGs_nhmbFEs-1jpx6JnLwotfEd9gsD-nY8Wv1IDo5tlcWoo0Y4qcAfojW4cK/pub?output=csv';         // Google Sheet-এর "Publish to web" CSV লিংক
-  var ORDER_EMAIL = '';       // অর্ডার যে ইমেইলে আসবে
+  var ORDER_EMAIL = 'mdnomanisman123x@gmail.com';       // অর্ডার যে ইমেইলে আসবে
   var DELIVERY_IN = 60, DELIVERY_OUT = 120;
   /* ========================= */
 
@@ -319,7 +319,7 @@ textarea { resize: vertical; min-height: 64px; }
     }).then(function (r) { return r.json(); }).then(function (j) {
       clearTimeout(timer);
       if (!(j && (j.success === true || j.success === 'true'))) throw new Error('fail');
-      $('sbody').innerHTML = '<div class="done"><h3>অর্ডার নেওয়া হয়েছে</h3><p>অর্ডার নম্বর: <strong>' + id + '</strong><br>আমরা আপনার নম্বরে ফোন করে অর্ডার নিশ্চিত করব। ডেলিভারির সময় টাকা দিন।</p><button class="btn" type="button" id="again">আরও দেখুন</button><a class="ghost" href="https://wa.me/' + WA + '" target="_blank" rel="noopener">প্রশ্ন থাকলে হোয়াটসঅ্যাপে মেসেজ করুন</a></div>';
+      $('sbody').innerHTML = '<div class="done"><h3>অর্ডার নেওয়া হয়েছে</h3><p>অর্ডার নম্বর: <strong>' + id + '</strong><br>আমরা আপনার নম্বরে ফোন করে অর্ডার নিশ্চিত করব। দ্রুত নিশ্চিত হতে চাইলে নিচের বাটনে হোয়াটসঅ্যাপেও পাঠাতে পারেন।</p><a class="order" href="https://wa.me/' + WA + '?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">হোয়াটসঅ্যাপেও অর্ডারটা পাঠান</a><button class="ghost" type="button" id="again">আরও দেখুন</button></div>';
     }).catch(function () {
       clearTimeout(timer);
       waScreen(msg, 'অর্ডার সরাসরি পাঠানো যায়নি। হোয়াটসঅ্যাপে সেন্ড করলে অর্ডার পৌঁছাবে।');
