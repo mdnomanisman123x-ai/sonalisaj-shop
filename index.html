@@ -157,7 +157,7 @@ textarea { resize: vertical; min-height: 64px; }
   var WA = '8801906374498';   // হোয়াটসঅ্যাপ নম্বর (দেশের কোডসহ, + ছাড়া)
   var SHOP = 'সোনালী সাজ';     // শপের নাম
   var SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsuwMym2bfzz0f_L8VnGs_nhmbFEs-1jpx6JnLwotfEd9gsD-nY8Wv1IDo5tlcWoo0Y4qcAfojW4cK/pub?output=csv';         // Google Sheet-এর "Publish to web" CSV লিংক
-  var ORDER_EMAIL = 'mdnomanisman123x@gmail.com';       // অর্ডার যে ইমেইলে আসবে
+  var WEB3_KEY = 'aecb6365-dd7f-4e1a-a198-66fbc27c71b8';  // Web3Forms চাবি: অর্ডার ইমেইলে পাঠায়
   var DELIVERY_IN = 60, DELIVERY_OUT = 120;
   /* ========================= */
 
@@ -306,15 +306,15 @@ textarea { resize: vertical; min-height: 64px; }
     var id = 'SS-' + Date.now().toString(36).toUpperCase().slice(-6);
     var msg = 'অর্ডার ' + id + ': ' + SHOP + '\n\nপণ্য: ' + cur.n + ' x ' + bn(qty) + ' = ' + tk(cur.p * qty) + '\nডেলিভারি (' + zt + '): ' + tk(zone) + '\nমোট: ' + tk(total) + ' (ক্যাশ অন ডেলিভারি)\n\nনাম: ' + name + '\nমোবাইল: ' + ph + '\nঠিকানা: ' + ad;
 
-    if (!ORDER_EMAIL) { waScreen(msg, 'হোয়াটসঅ্যাপ খুলে মেসেজটা সেন্ড করুন। সেন্ড করলেই আপনার অর্ডার আমাদের কাছে পৌঁছাবে।'); return; }
+    if (!WEB3_KEY) { waScreen(msg, 'হোয়াটসঅ্যাপ খুলে মেসেজটা সেন্ড করুন। সেন্ড করলেই আপনার অর্ডার আমাদের কাছে পৌঁছাবে।'); return; }
 
     var btn = $('go'); btn.disabled = true; btn.textContent = 'পাঠানো হচ্ছে...'; err.textContent = '';
     var ctl = window.AbortController ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
-    fetch('https://formsubmit.co/ajax/' + encodeURIComponent(ORDER_EMAIL), {
+    fetch('https://api.web3forms.com/submit', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, signal: ctl ? ctl.signal : undefined,
-      body: JSON.stringify({ _subject: 'নতুন অর্ডার ' + id + ' - ' + cur.n, _template: 'table', _captcha: 'false',
-        'অর্ডার নম্বর': id, 'পণ্য': cur.n, 'পরিমাণ': qty, 'পণ্যের দাম': tk(cur.p * qty), 'ডেলিভারি': zt + ' ' + tk(zone), 'মোট': tk(total),
+      body: JSON.stringify({ access_key: WEB3_KEY, subject: 'নতুন অর্ডার ' + id + ' - ' + cur.n, from_name: SHOP,
+        'অর্ডার নম্বর': id, 'পণ্য': cur.n, 'পরিমাণ': qty, 'পণ্যের দাম': tk(cur.p * qty), 'ডেলিভারি': zt + ' ' + tk(zone), 'মোট': tk(total) + ' (ক্যাশ অন ডেলিভারি)',
         'নাম': name, 'মোবাইল': ph, 'ঠিকানা': ad })
     }).then(function (r) { return r.json(); }).then(function (j) {
       clearTimeout(timer);
