@@ -96,7 +96,8 @@ a.ghost { display: block; text-align: center; text-decoration: none; }
 .dprice s { color: var(--muted); font-size: 1rem; font-weight: 500; }
 .ddesc { color: var(--muted); margin: 8px 0 14px; white-space: pre-line; }
 .stack { display: grid; gap: 10px; }
-.card .tile { aspect-ratio: 5 / 4; }
+.card .tile { aspect-ratio: 1 / 1; }
+.card .tile img { object-fit: contain; }
 .cbuy { margin: 0 10px 10px; border: 0; background: var(--accent); color: var(--accent-fg); border-radius: 8px; padding: 6px 8px; font-weight: 600; font-size: .88rem; }
 .cbuy:disabled { background: var(--line); color: var(--muted); }
 .cardbtn { flex: 1; display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; color: inherit; }
@@ -104,7 +105,9 @@ a.ghost { display: block; text-align: center; text-decoration: none; }
 .cname { font-weight: 600; font-size: .9rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .cprice { font-family: var(--font-display); font-weight: 700; font-size: .98rem; }
 .cprice s { font-weight: 500; font-size: .76rem; color: var(--muted); margin-left: 6px; }
-.ptile .tile { aspect-ratio: 16 / 11; border-radius: 10px; }
+.ptile .tile { aspect-ratio: auto; min-height: 170px; border-radius: 10px; }
+.ptile .tile img { position: static; display: block; width: 100%; height: auto; max-height: 68vh; object-fit: contain; margin: 0 auto; }
+.ptile .tile:has(img) svg { display: none; }
 .ptile .tile svg { width: 34%; height: 34%; }
 .qrow { display: flex; justify-content: space-between; align-items: center; padding-block: 8px; border-bottom: 1px solid var(--line); font-weight: 500; }
 .centerc { display: block; text-align: center; margin: 10px auto 0; }
@@ -180,6 +183,8 @@ textarea { resize: vertical; min-height: 64px; }
   var SHOP = 'সোনালী সাজ';     // শপের নাম
   var SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsuwMym2bfzz0f_L8VnGs_nhmbFEs-1jpx6JnLwotfEd9gsD-nY8Wv1IDo5tlcWoo0Y4qcAfojW4cK/pub?output=csv';         // Google Sheet-এর "Publish to web" CSV লিংক
   var WEB3_KEY = 'aecb6365-dd7f-4e1a-a198-66fbc27c71b8';  // Web3Forms চাবি: অর্ডার ইমেইলে পাঠায়
+  var ORDER_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdHs4rQxD5-sJ0-ssrqWBQ2NAKCGglYt2DXg54U5fFVOI48Qw/formResponse';   // অর্ডার খাতা (Google Form)
+  var ORDER_FORM_FIELD = 'entry.701175430';
   var DELIVERY_IN = 60, DELIVERY_OUT = 120;
   /* ========================= */
 
@@ -301,6 +306,7 @@ textarea { resize: vertical; min-height: 64px; }
     else if (t.dataset.copy !== undefined) copyLink(Number(t.dataset.copy), t);
     else if (t.id === 'wa-order') {
       var o = readOrder(); if (!o) return;
+      logOrder(o, 'হোয়াটসঅ্যাপ');
       try { window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(o.msg), '_blank'); } catch (x) {}
       waScreen(o.msg, 'হোয়াটসঅ্যাপ খুলেছে। মেসেজটা সেন্ড করলেই অর্ডার আমাদের কাছে পৌঁছাবে। খোলেনি? নিচের বাটনে চাপুন।');
     }
@@ -313,6 +319,18 @@ textarea { resize: vertical; min-height: 64px; }
   function waScreen(msg, note) {
     waUrl = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
     $('sbody').innerHTML = '<div class="done"><h3>প্রায় শেষ</h3><p>' + note + '</p><a class="order" href="' + waUrl + '" target="_blank" rel="noopener">হোয়াটসঅ্যাপে সেন্ড করুন</a><button class="ghost" type="button" id="again">আরও দেখুন</button></div>';
+  }
+
+  // অর্ডার খাতায় একটা সারি যোগ করে (সাইট বা হোয়াটসঅ্যাপ, দুই পথেই)
+  function logOrder(o, channel) {
+    if (!ORDER_FORM_URL) return;
+    try {
+      var c = function (v) { return String(v == null ? '' : v).replace(/[|\r\n]+/g, ' ').trim(); };
+      var d = new Date(), z2 = function (n) { return ('0' + n).slice(-2); }, h = d.getHours() % 12 || 12, tm = z2(d.getDate()) + '/' + z2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + z2(h) + ':' + z2(d.getMinutes()) + (d.getHours() < 12 ? ' AM' : ' PM');
+      var line = [tm, o.id, o.name, o.ph, o.ad, cur.n, qty, cur.p * qty, zone, o.total, channel].map(c).join(' | ');
+      var body = new URLSearchParams(); body.set(ORDER_FORM_FIELD, line);
+      fetch(ORDER_FORM_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() }).catch(function () {});
+    } catch (x) {}
   }
 
   function copyLink(i, btn) {
@@ -338,6 +356,7 @@ textarea { resize: vertical; min-height: 64px; }
   document.addEventListener('submit', function (e) {
     e.preventDefault();
     var o = readOrder(); if (!o) return;
+    logOrder(o, 'সাইট');
     var err = $('err');
     if (!WEB3_KEY) { waScreen(o.msg, 'হোয়াটসঅ্যাপ খুলে মেসেজটা সেন্ড করুন। সেন্ড করলেই আপনার অর্ডার আমাদের কাছে পৌঁছাবে।'); return; }
 
