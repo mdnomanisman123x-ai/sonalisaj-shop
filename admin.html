@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b6b4d">
+<title>অর্ডার খাতা | সোনালী সাজ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;700;800&family=Hind+Siliguri:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #11231c; --muted: #5b6e65; --line: #d8e0db;
+  --accent: #0b6b4d; --accent-fg: #ffffff; --alert: #d6393f; --wa: #178a48;
+  --s-new: #d6393f; --s-ok: #1b6fd1; --s-ship: #8a4fd0; --s-done: #178a48; --s-cancel: #7a8680;
+  --font-display: "Anek Bangla", "Hind Siliguri", system-ui, sans-serif;
+  --font-body: "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1713; --surface: #15231d; --fg: #e8f1ec; --muted: #93a79c; --line: #263832;
+    --accent: #3fc08f; --accent-fg: #06150f; --alert: #ff7076; --wa: #2bb369;
+    --s-new: #ff7076; --s-ok: #6aa8ff; --s-ship: #b891f2; --s-done: #4ccd88; --s-cancel: #8a9a92;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1713; --surface: #15231d; --fg: #e8f1ec; --muted: #93a79c; --line: #263832;
+  --accent: #3fc08f; --accent-fg: #06150f; --alert: #ff7076; --wa: #2bb369;
+  --s-new: #ff7076; --s-ok: #6aa8ff; --s-ship: #b891f2; --s-done: #4ccd88; --s-cancel: #8a9a92;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 40px;
+}
+[hidden] { display: none !important; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 720px; margin: 0 auto; }
+
+.bar { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 10px; }
+.title { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; }
+.title small { display: block; font-family: var(--font-body); font-weight: 400; font-size: .78rem; color: var(--muted); }
+.tools { display: flex; gap: 8px; }
+.tbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; font-weight: 500; font-size: .9rem; }
+
+.summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding-block: 14px 4px; }
+.sum { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.sum b { display: block; font-family: var(--font-display); font-size: 1.3rem; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.sum span { color: var(--muted); font-size: .8rem; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: .9rem; font-weight: 500; }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.chip i { font-style: normal; opacity: .7; margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+.demo { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; color: var(--muted); font-size: .88rem; margin-top: 12px; }
+.list { display: grid; gap: 12px; padding-top: 4px; }
+.order { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--st, var(--line)); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
+.row1 { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.oid { font-family: var(--font-display); font-weight: 700; }
+.time { color: var(--muted); font-size: .82rem; }
+.name { font-weight: 600; font-size: 1.05rem; }
+.addr { color: var(--muted); font-size: .92rem; overflow-wrap: anywhere; }
+.item { display: flex; justify-content: space-between; gap: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.item .t { font-family: var(--font-display); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { display: inline-block; font-size: .75rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; color: var(--muted); margin-left: 6px; }
+.acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.act { text-decoration: none; border-radius: 8px; padding: 6px 12px; font-weight: 600; font-size: .9rem; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.act.wa { background: var(--wa); color: #fff; border-color: var(--wa); }
+select.st { margin-left: auto; border: 1px solid var(--st, var(--line)); background: var(--surface); border-radius: 8px; padding: 6px 8px; font-weight: 600; color: var(--st, var(--fg)); }
+.empty { text-align: center; color: var(--muted); padding: 40px 10px; }
+
+.login { max-width: 360px; margin: 18vh auto 0; display: grid; gap: 12px; }
+.login h1 { font-family: var(--font-display); font-size: 1.6rem; margin: 0; }
+.login p { margin: 0; color: var(--muted); }
+.login input { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; }
+.login button { background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 10px; padding: 12px; font-weight: 600; font-size: 1.05rem; }
+.err { color: var(--alert); min-height: 1.3em; margin: 0; font-size: .9rem; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(20px, env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); border-radius: 999px; padding: 10px 18px; font-weight: 500; z-index: 9; max-width: calc(100% - 32px); text-align: center; }
+</style>
+</head>
+<body>
+
+<section id="login" class="login" hidden>
+  <h1>অর্ডার খাতা</h1>
+  <p>সোনালী সাজ এর অ্যাডমিন পাতা। পাসওয়ার্ড দিয়ে ঢুকুন।</p>
+  <form id="login-form">
+    <label for="pw" style="display:none">পাসওয়ার্ড</label>
+    <input type="password" id="pw" placeholder="পাসওয়ার্ড" autocomplete="current-password">
+    <p class="err" id="login-err" role="alert"></p>
+    <button type="submit">ঢুকুন</button>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <div class="bar"><div class="wrap">
+    <div class="title">অর্ডার খাতা<small id="updated">লোড হচ্ছে...</small></div>
+    <div class="tools"><button class="tbtn" id="refresh" type="button">রিফ্রেশ</button></div>
+  </div></div>
+  <main class="wrap">
+    <div class="demo" id="demo" hidden>এগুলো নমুনা অর্ডার। অর্ডার খাতার লিংক জোড়া হলে আসল অর্ডার এখানে আসবে।</div>
+    <section class="summary" aria-label="সারাংশ">
+      <div class="sum"><b id="s-new">০</b><span>নতুন অর্ডার</span></div>
+      <div class="sum"><b id="s-today">০</b><span>আজকের অর্ডার</span></div>
+      <div class="sum"><b id="s-money">০</b><span>আজকের বিক্রি (টাকা)</span></div>
+    </section>
+    <div class="chips" id="chips" role="group" aria-label="অবস্থা"></div>
+    <section class="list" id="list" aria-live="polite"></section>
+  </main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  /* ====== সেটিংস ====== */
+  var CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjevFQzErfvczLvFR2rBfAUaxR38X6NKkF5ckFI7LUVv9FrVdoDzEDWEDiALrSiqt1sXjQMjE2qwHp/pub?gid=1287635946&single=true&output=csv';
+  var SHOP = 'সোনালী সাজ';
+  var STATUS = ['নতুন', 'কনফার্ম', 'পাঠানো', 'ডেলিভারি', 'বাতিল'];
+  var COLOR = { 'নতুন': 'var(--s-new)', 'কনফার্ম': 'var(--s-ok)', 'পাঠানো': 'var(--s-ship)', 'ডেলিভারি': 'var(--s-done)', 'বাতিল': 'var(--s-cancel)' };
+  /* ==================== */
+
+  var BN = '০১২৩৪৫৬৭৮৯';
+  function bn(n) { return String(n).replace(/\d/g, function (d) { return BN[d]; }); }
+  function money(n) { return bn(Number(n || 0).toLocaleString('en-US')); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  var $ = function (id) { return document.getElementById(id); };
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} return null; }
+
+  var DEMO = [
+    { id: 'SS-4F2K9A', time: '30/10/2026 09:14 AM', name: 'রিমা আক্তার', phone: '01712345678', address: 'ইসলামবাগ, কামরাঙ্গীরচর, ঢাকা', product: 'গোল্ডেন গিফট কম্বো', qty: 1, delivery: 60, total: 1050, channel: 'সাইট', status: 'ডেলিভারি' },
+    { id: 'SS-9B3QXM', time: '31/10/2026 06:40 PM', name: 'সুমি খাতুন', phone: '01912345670', address: 'মিরপুর ১০, ঢাকা', product: 'হার্ট নেকলেস', qty: 2, delivery: 60, total: 760, channel: 'হোয়াটসঅ্যাপ', status: 'পাঠানো' },
+    { id: 'SS-7C1LDP', time: '01/11/2026 10:05 AM', name: 'নুসরাত জাহান', phone: '01812345671', address: 'আগ্রাবাদ, চট্টগ্রাম', product: 'লেডিস গোল্ডেন ঘড়ি', qty: 1, delivery: 120, total: 870, channel: 'সাইট', status: 'নতুন' }
+  ];
+
+  var orders = [], filter = 'সব', demo = !CSV, timer = null, lastNew = null, saved = {};
+  try { saved = JSON.parse(store('ssst') || '{}') || {}; } catch (e) { saved = {}; }
+
+  function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, 2800); }
+
+  function parseCSV(t) {
+    var rows = [], row = [], f = '', q = false, i, c;
+    t = t.replace(/^﻿/, '');
+    for (i = 0; i < t.length; i++) {
+      c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true;
+      else if (c === ',') { row.push(f); f = ''; }
+      else if (c === '\n') { row.push(f); rows.push(row); row = []; f = ''; }
+      else if (c !== '\r') f += c;
+    }
+    if (f !== '' || row.length) { row.push(f); rows.push(row); }
+    return rows;
+  }
+
+  function fromCSV(text) {
+    var rows = parseCSV(text).slice(1), out = [];
+    rows.forEach(function (r) {
+      var line = (r[1] || '').trim(); if (!line) return;
+      var p = line.split('|').map(function (x) { return x.trim(); });
+      if (p.length < 10) return;
+      var id = p[1];
+      out.push({ time: p[0], id: id, name: p[2], phone: p[3], address: p[4], product: p[5], qty: Number(p[6]) || 1, delivery: Number(p[8]) || 0, total: Number(p[9]) || 0, channel: p[10] || 'সাইট', status: saved[id] || 'নতুন' });
+    });
+    return out;
+  }
+
+  function todayStr() { var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+
+  function render() {
+    var cnt = { 'সব': orders.length }; STATUS.forEach(function (s) { cnt[s] = 0; });
+    var today = todayStr(), tCount = 0, tMoney = 0;
+    orders.forEach(function (o) {
+      if (cnt[o.status] !== undefined) cnt[o.status]++;
+      if (String(o.time).indexOf(today) === 0) { tCount++; if (o.status !== 'বাতিল') tMoney += Number(o.total) || 0; }
+    });
+    $('s-new').textContent = bn(cnt['নতুন']); $('s-today').textContent = bn(tCount); $('s-money').textContent = money(tMoney);
+    $('chips').innerHTML = ['সব'].concat(STATUS).map(function (s) {
+      return '<button class="chip" type="button" data-f="' + s + '" aria-pressed="' + (filter === s) + '">' + s + '<i>' + bn(cnt[s]) + '</i></button>';
+    }).join('');
+    var list = orders.slice().reverse().filter(function (o) { return filter === 'সব' || o.status === filter; });
+    $('list').innerHTML = list.length ? list.map(function (o) {
+      var ph = String(o.phone || '').replace(/\D/g, '');
+      var opts = STATUS.map(function (s) { return '<option' + (s === o.status ? ' selected' : '') + '>' + s + '</option>'; }).join('');
+      return '<article class="order" style="--st:' + (COLOR[o.status] || 'var(--line)') + '">' +
+        '<div class="row1"><span class="oid">' + esc(o.id) + '<span class="tag">' + esc(o.channel) + '</span></span><span class="time">' + esc(o.time) + '</span></div>' +
+        '<div class="name">' + esc(o.name) + '</div><div class="addr">' + esc(o.address) + '</div>' +
+        '<div class="item"><span>' + esc(o.product) + ' × ' + bn(o.qty) + '<br><span class="time">ডেলিভারি চার্জ ' + money(o.delivery) + ' টাকা সহ</span></span><span class="t">' + money(o.total) + ' টাকা</span></div>' +
+        '<div class="acts"><a class="act" href="tel:' + esc(ph) + '">ফোন ' + esc(ph) + '</a>' +
+        '<a class="act wa" href="https://wa.me/88' + esc(ph) + '" target="_blank" rel="noopener">হোয়াটসঅ্যাপ</a>' +
+        '<select class="st" data-id="' + esc(o.id) + '" aria-label="অবস্থা বদলান">' + opts + '</select></div></article>';
+    }).join('') : '<div class="empty">এই অবস্থায় এখন কোনো অর্ডার নেই।</div>';
+  }
+
+  function setUpdated() { var d = new Date(); $('updated').textContent = 'হালনাগাদ ' + bn(String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0')); }
+
+  function load(silent) {
+    if (demo) { orders = DEMO.map(function (o) { return Object.assign({}, o); }); render(); setUpdated(); return Promise.resolve(); }
+    if (!silent) $('updated').textContent = 'লোড হচ্ছে...';
+    return fetch(CSV + (CSV.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now()).then(function (r) { if (!r.ok) throw new Error('x'); return r.text(); }).then(function (t) {
+      orders = fromCSV(t);
+      var n = orders.filter(function (o) { return o.status === 'নতুন'; }).length;
+      if (lastNew !== null && n > lastNew) toast('নতুন অর্ডার এসেছে (' + bn(n - lastNew) + 'টি)');
+      lastNew = n; document.title = (n ? '(' + bn(n) + ') ' : '') + 'অর্ডার খাতা | ' + SHOP;
+      render(); setUpdated();
+    }).catch(function () { $('updated').textContent = 'লোড করা যায়নি, ইন্টারনেট দেখুন'; });
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.f) { filter = b.dataset.f; render(); }
+    else if (b.id === 'refresh') load();
+  });
+  document.addEventListener('change', function (e) {
+    var sel = e.target.closest('select.st'); if (!sel) return;
+    var id = sel.dataset.id, val = sel.value, o = orders.filter(function (x) { return x.id === id; })[0]; if (!o) return;
+    o.status = val; saved[id] = val; store('ssst', JSON.stringify(saved)); render(); toast(id + ': ' + val);
+  });
+
+  $('app').hidden = false; $('demo').hidden = !demo;
+  load(); timer = setInterval(function () { if (!document.hidden) load(true); }, 60000);
+})();
+</script>
+</body>
+</html>
