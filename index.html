@@ -98,6 +98,8 @@ a.ghost { display: block; text-align: center; text-decoration: none; }
 .stack { display: grid; gap: 10px; }
 .card .tile { aspect-ratio: 1 / 1; }
 .card .tile img { object-fit: contain; }
+.tile img.bgimg { object-fit: cover; filter: blur(14px) saturate(1.15); transform: scale(1.3); opacity: .9; }
+.ptile .tile img.bgimg { display: none; }
 .cbuy { margin: 0 10px 10px; border: 0; background: var(--accent); color: var(--accent-fg); border-radius: 8px; padding: 6px 8px; font-weight: 600; font-size: .88rem; }
 .cbuy:disabled { background: var(--line); color: var(--muted); }
 .cardbtn { flex: 1; display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; color: inherit; }
@@ -242,7 +244,7 @@ textarea { resize: vertical; min-height: 64px; }
     var disc = (!small && p.o && p.o > p.p) ? '<span class="tag">' + bn(Math.round((1 - p.p / p.o) * 100)) + '% ছাড়</span>' : '';
     var out = (!small && p.out) ? '<span class="tag out">স্টক শেষ</span>' : '';
     var svg = '<svg viewBox="0 0 24 24" aria-hidden="true">' + GLYPH + '</svg>';
-    var img = p.img ? '<img src="' + esc(p.img) + '" alt="' + esc(p.n) + '" loading="lazy" referrerpolicy="no-referrer">' : '';
+    var img = p.img ? '<img class="bgimg" src="' + esc(p.img) + '" alt="" aria-hidden="true" loading="lazy" referrerpolicy="no-referrer"><img src="' + esc(p.img) + '" alt="' + esc(p.n) + '" loading="lazy" referrerpolicy="no-referrer">' : '';
     return '<div class="tile" style="--h:' + hue(p.n) + '">' + svg + img + disc + out + '</div>';
   }
   document.addEventListener('error', function (e) { if (e.target && e.target.tagName === 'IMG') e.target.remove(); }, true);
